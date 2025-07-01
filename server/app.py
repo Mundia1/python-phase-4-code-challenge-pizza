@@ -32,12 +32,7 @@ def index():
 @app.route('/restaurants', methods=['GET'])
 def get_restaurants():
     restaurants = Restaurant.query.all()
-    result = []
-    for restaurant in restaurants:
-        restaurant_dict = restaurant.to_dict()
-        restaurant_dict['restaurant_pizzas'] = [rp.to_dict() for rp in restaurant.restaurant_pizzas]
-        result.append(restaurant_dict)
-    return make_response(result, 200)
+    return make_response([restaurant.to_dict() for restaurant in restaurants], 200)
 
 # GET /restaurants/<int:id>
 @app.route('/restaurants/<int:id>', methods=['GET'])
@@ -88,26 +83,36 @@ def create_restaurant_pizza():
         if not pizza or not restaurant:
             return make_response({"error": "Pizza or Restaurant not found"}, 404)
         
-        # Create new RestaurantPizza
-        restaurant_pizza = RestaurantPizza(
-            price=data['price'],
-            pizza_id=data['pizza_id'],
-            restaurant_id=data['restaurant_id']
-        )
-        
-        db.session.add(restaurant_pizza)
-        db.session.commit()
-        
-        # Return the created restaurant_pizza with nested data
-        response_data = restaurant_pizza.to_dict()
-        response_data['pizza'] = pizza.to_dict()
-        response_data['restaurant'] = restaurant.to_dict()
-        
-        return make_response(response_data, 201)
-        
-    except ValueError as e:
-        db.session.rollback()
-        return make_response({"errors": [str(e)]}, 400)
+        try:
+            restaurant_pizza = RestaurantPizza(
+                price=data['price'],
+                pizza_id=data['pizza_id'],
+                restaurant_id=data['restaurant_id']
+            )
+            db.session.add(restaurant_pizza)
+            db.session.commit()
+            
+            # Return the expected response format
+            return make_response({
+                'id': restaurant_pizza.id,
+                'price': restaurant_pizza.price,
+                'pizza_id': restaurant_pizza.pizza_id,
+                'pizza': {
+                    'id': restaurant_pizza.pizza.id,
+                    'name': restaurant_pizza.pizza.name,
+                    'ingredients': restaurant_pizza.pizza.ingredients
+                },
+                'restaurant_id': restaurant_pizza.restaurant_id,
+                'restaurant': {
+                    'id': restaurant_pizza.restaurant.id,
+                    'name': restaurant_pizza.restaurant.name,
+                    'address': restaurant_pizza.restaurant.address
+                }
+            }, 201)
+            
+        except ValueError:
+            db.session.rollback()
+            return make_response({"errors": ["validation errors"]}, 400)
     except Exception as e:
         db.session.rollback()
         return make_response({"errors": ["Validation errors"]}, 400)
