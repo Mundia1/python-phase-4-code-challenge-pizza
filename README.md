@@ -1,52 +1,92 @@
-# Phase 4 Code Challenge: Pizza Restaurants (Updated)
+# Pizza Restaurants API
 
-In this code challenge, you'll be working with a Pizza Restaurant domain.
+A Flask RESTful API for managing pizza restaurants and their menu items, with a React frontend.
 
-In this repo:
+## Features
 
-- There is a Flask application with some features built out.
-- There is a fully built React frontend application.
-- There are tests included which you can run using `pytest -x`.
-- There is a file `challenge-1-pizzas.postman_collection.json` that contains a
-  Postman collection of requests for testing each route you will implement.
+- RESTful API endpoints for managing restaurants and pizzas
+- SQLite database with SQLAlchemy ORM
+- React frontend for interacting with the API
+- Full test coverage with pytest
 
-Depending on your preference, you can either check your API by:
+## Tech Stack
 
-- Using Postman to make requests
-- Running `pytest -x` and seeing if your code passes the tests
-- Running the React application in the browser and interacting with the API via
-  the frontend
-
-You can import `challenge-1-pizzas.postman_collection.json` into Postman by
-pressing the `Import` button.
-
-![import postman](https://curriculum-content.s3.amazonaws.com/6130/phase-4-code-challenge-instructions/import_collection.png)
-
-Select `Upload Files`, navigate to this repo folder, and select
-`challenge-1-pizzas.postman_collection.json` as the file to import.
+- **Backend**: Python, Flask, SQLAlchemy
+- **Frontend**: React
+- **Database**: SQLite
+- **Testing**: pytest
 
 ## Setup
 
-The instructions assume you changed into the `code-challenge` folder **prior**
-to opening the code editor.
+1. Clone the repository
+2. Install dependencies:
 
-To download the dependencies for the frontend and backend, run:
-
-```console
+```bash
+# Install Python dependencies
 pipenv install
 pipenv shell
+
+# Install Node.js dependencies
 npm install --prefix client
 ```
 
-You can run your Flask API on [`localhost:5555`](http://localhost:5555) by
-running:
+## Running the Application
 
-```console
+### Backend
+
+```bash
+# Start the Flask server on port 5555
 python server/app.py
 ```
 
-You can run your React app on [`localhost:4000`](http://localhost:4000) by
-running:
+### Frontend
+
+```bash
+# Start the React development server on port 4000
+npm start --prefix client
+```
+
+## API Endpoints
+
+### Restaurants
+
+- `GET /restaurants` - List all restaurants
+- `GET /restaurants/<int:id>` - Get a specific restaurant with its pizzas
+- `DELETE /restaurants/<int:id>` - Delete a restaurant
+
+### Pizzas
+
+- `GET /pizzas` - List all available pizzas
+
+### Restaurant Pizzas
+
+- `POST /restaurant_pizzas` - Create a new restaurant-pizza association
+
+## Testing
+
+Run the test suite with:
+
+```bash
+pytest -x
+```
+
+## Database Schema
+
+### Restaurant
+- id: Integer (Primary Key)
+- name: String
+- address: String
+
+### Pizza
+- id: Integer (Primary Key)
+- name: String
+- ingredients: String
+
+### RestaurantPizza
+- id: Integer (Primary Key)
+- price: Integer (1-30)
+- pizza_id: Integer (Foreign Key)
+- restaurant_id: Integer (Foreign Key)
 
 ```sh
 npm start --prefix client
